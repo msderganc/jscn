@@ -1,0 +1,58 @@
+{
+  "name": "jscn",
+  "version": "0.1.0",
+  "description": "A JavaScript and TypeScript structural code quality analyzer.",
+  "homepage": "https://github.com/msderganc/jscn#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/msderganc/jscn.git"
+  },
+  "bugs": {
+    "url": "https://github.com/msderganc/jscn/issues"
+  },
+  "keywords": [
+    "static-analysis",
+    "typescript",
+    "javascript",
+    "code-quality"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@9.15.4",
+  "bin": {
+    "jscn": "./dist/cli/main.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "docs",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node scripts/clean-dist.mjs && tsc -p tsconfig.json",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@typescript-eslint/typescript-estree": "8.61.1",
+    "commander": "14.0.3",
+    "fast-glob": "3.3.3",
+    "minimatch": "10.2.5",
+    "smol-toml": "1.6.1",
+    "typescript": "5.9.3"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.2",
+    "vitest": "3.2.6"
+  }
+}
