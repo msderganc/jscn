@@ -1,6 +1,6 @@
 {
   "name": "@msderganc/jscn",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A JavaScript and TypeScript structural code quality analyzer.",
   "homepage": "https://github.com/msderganc/jscn#readme",
   "repository": {
