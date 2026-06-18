@@ -1,12 +1,13 @@
 import type { Issue, MockDataReport } from "../core/schema.js";
 import type { ProjectModel } from "../project/model.js";
+import { isFixturePath, isTestPath } from "../project/path-classification.js";
 
 const fakePatterns = [/lorem ipsum/i, /test@example\.com/i, /john doe/i, /jane doe/i];
 
 export function analyzeMockData(project: ProjectModel): MockDataReport {
   const issues: Issue[] = [];
   for (const file of project.files) {
-    if (isTestPath(file.relativePath)) {
+    if (isTestPath(file.relativePath) || isFixturePath(file.relativePath)) {
       continue;
     }
     const lines = file.text.split(/\r?\n/);
@@ -29,8 +30,4 @@ export function analyzeMockData(project: ProjectModel): MockDataReport {
 
 export function mockDataIssues(report: MockDataReport): Issue[] {
   return report.issues;
-}
-
-function isTestPath(path: string): boolean {
-  return /(^tests\/|__fixtures__\/|\.test\.|\.spec\.)/.test(path);
 }

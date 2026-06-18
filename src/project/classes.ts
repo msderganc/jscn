@@ -15,6 +15,8 @@ interface ClassSummary {
   fields: string[];
   extends?: string;
   implements: string[];
+  kind: "component" | "error" | "utility" | "class";
+  methodFieldUses: Array<{ method: string; fields: string[] }>;
 }
 
 export function buildClassModel(project: ProjectModel): ClassModel {
@@ -37,6 +39,8 @@ export function buildClassModel(project: ProjectModel): ClassModel {
           fields: classMembers(node, "PropertyDefinition"),
           extends: nodeName(node.superClass),
           implements: (node.implements ?? []).map((item: AstNode) => nodeName(item.expression)).filter(Boolean),
+          kind: classKind(assignedName, nodeName(node.superClass)),
+          methodFieldUses: methodFieldUses(node),
         });
       }
     });
@@ -49,6 +53,41 @@ function classMembers(node: AstNode, type: string): string[] {
     .filter((member: unknown) => isAstNode(member) && member.type === type)
     .map((member: AstNode) => nodeName(member.key))
     .filter(Boolean);
+}
+
+function methodFieldUses(node: AstNode): Array<{ method: string; fields: string[] }> {
+  return (node.body?.body ?? [])
+    .filter((member: unknown) => isAstNode(member) && member.type === "MethodDefinition")
+    .map((member: AstNode) => ({
+      method: nodeName(member.key) ?? "<anonymous>",
+      fields: [...fieldUses(member.value)].sort(),
+    }));
+}
+
+function fieldUses(node: AstNode | undefined): Set<string> {
+  const fields = new Set<string>();
+  traverseAst(node, (item) => {
+    if (item.type !== "MemberExpression" || item.object?.type !== "ThisExpression") {
+      return;
+    }
+    const field = nodeName(item.property);
+    if (field) {
+      fields.add(field);
+    }
+  });
+  return fields;
+}
+
+function classKind(name: string, extendsName?: string): ClassSummary["kind"] {
+  if (name.endsWith("Error") || extendsName === "Error") {
+    return "error";
+  }
+
+  if (extendsName === "Component" || extendsName === "React.Component" || extendsName === "React.PureComponent") {
+    return "component";
+  }
+
+  return "class";
 }
 
 function sourcePosition(node: AstNode): SourcePosition {

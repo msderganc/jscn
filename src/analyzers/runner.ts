@@ -62,15 +62,15 @@ export function runAnalysis(options: RunAnalysisOptions): AnalysisResult {
   }
 
   if (options.selectedAnalyzers.includes("deadcode")) {
-    const deadCode = analyzeDeadCode(options.project);
+    const deadCode = analyzeDeadCode(options.project, options.config.deadCode);
     analyses.deadCode = deadCode;
     issues.push(...deadCodeIssues(deadCode));
   }
 
   if (options.selectedAnalyzers.includes("clones")) {
-    const clones = analyzeClones(options.project);
+    const clones = analyzeClones(options.project, options.config.clones);
     analyses.clones = clones;
-    issues.push(...cloneIssues(clones));
+    issues.push(...cloneIssues(clones, options.config.clones));
   }
 
   if (options.selectedAnalyzers.includes("coupling") || options.selectedAnalyzers.includes("cbo")) {
@@ -92,7 +92,7 @@ export function runAnalysis(options: RunAnalysisOptions): AnalysisResult {
   }
 
   if (options.selectedAnalyzers.includes("di")) {
-    const di = analyzeDi(options.project);
+    const di = analyzeDi(options.project, options.config.di);
     analyses.di = di;
     issues.push(...diIssues(di));
   }

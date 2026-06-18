@@ -28,11 +28,30 @@ export interface DependenciesConfig {
   maxCycles: number;
 }
 
+export interface DeadCodeConfig {
+  reportIntentionalUnused: boolean;
+}
+
+export interface DiConfig {
+  containerNames: string[];
+  lookupMethods: string[];
+  compositionRoots: string[];
+}
+
+export interface ClonesConfig {
+  includeTestBoilerplate: boolean;
+  minNormalizedChars: number;
+  minNonImportChars: number;
+}
+
 export interface ResolvedConfig {
   output: OutputConfig;
   analysis: AnalysisConfig;
   complexity: ComplexityConfig;
   dependencies: DependenciesConfig;
+  deadCode: DeadCodeConfig;
+  di: DiConfig;
+  clones: ClonesConfig;
 }
 
 export type ConfigFile = {
@@ -40,6 +59,9 @@ export type ConfigFile = {
   analysis?: Partial<AnalysisConfig>;
   complexity?: Partial<ComplexityConfig>;
   dependencies?: Partial<DependenciesConfig>;
+  deadCode?: Partial<DeadCodeConfig>;
+  di?: Partial<DiConfig>;
+  clones?: Partial<ClonesConfig>;
 };
 
 export type ConfigOverrides = ConfigFile;
@@ -94,6 +116,26 @@ export function validateConfig(config: ResolvedConfig): void {
 
   if (!Number.isInteger(config.dependencies.maxCycles) || config.dependencies.maxCycles < 0) {
     issues.push("dependencies.max_cycles must be a non-negative integer");
+  }
+
+  if (!Array.isArray(config.di.containerNames) || config.di.containerNames.length === 0 || config.di.containerNames.some((value) => !value)) {
+    issues.push("di.container_names must be a non-empty string array");
+  }
+
+  if (!Array.isArray(config.di.lookupMethods) || config.di.lookupMethods.length === 0 || config.di.lookupMethods.some((value) => !value)) {
+    issues.push("di.lookup_methods must be a non-empty string array");
+  }
+
+  if (!Array.isArray(config.di.compositionRoots) || config.di.compositionRoots.length === 0 || config.di.compositionRoots.some((value) => !value)) {
+    issues.push("di.composition_roots must be a non-empty string array");
+  }
+
+  if (!Number.isInteger(config.clones.minNormalizedChars) || config.clones.minNormalizedChars < 1) {
+    issues.push("clones.min_normalized_chars must be a positive integer");
+  }
+
+  if (!Number.isInteger(config.clones.minNonImportChars) || config.clones.minNonImportChars < 0) {
+    issues.push("clones.min_non_import_chars must be a non-negative integer");
   }
 
   if (issues.length > 0) {
