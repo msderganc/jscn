@@ -2,6 +2,10 @@
 
 JavaScript and TypeScript structural code quality analyzer.
 
+## Background
+
+jscn is inspired by `pyscn` and adapts its structural analysis methods for JavaScript and TypeScript projects. It keeps the same broad idea: scan a codebase statically, report complexity and dependency health, and expose the results through CLI-friendly checks and machine-readable reports.
+
 ## Install
 
 ```sh
