@@ -5,7 +5,7 @@ JavaScript and TypeScript structural code quality analyzer.
 ## Install
 
 ```sh
-npm install -D jscn
+npm install -D @msderganc/jscn
 ```
 
 ## Quick Start
