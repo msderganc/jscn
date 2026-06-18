@@ -25,6 +25,19 @@ enabled = true
 include_type_only = false
 include_external = false
 max_cycles = 0
+
+[dead_code]
+report_intentional_unused = false
+
+[di]
+container_names = ["container", "serviceLocator", "locator", "injector", "registry", "di"]
+lookup_methods = ["get", "resolve", "lookup"]
+composition_roots = ["**/main.{js,jsx,ts,tsx,mjs,cjs,mts,cts}", "**/bootstrap.{js,jsx,ts,tsx,mjs,cjs,mts,cts}", "**/composition-root.{js,jsx,ts,tsx,mjs,cjs,mts,cts}"]
+
+[clones]
+include_test_boilerplate = false
+min_normalized_chars = 40
+min_non_import_chars = 20
 `;
 
 interface WriteDefaultConfigOptions {

@@ -10,12 +10,41 @@ import { defaultConfig } from "../../src/config/defaults.js";
 import { discoverProject } from "../../src/project/discover.js";
 
 describe("cohesion analyzer", () => {
-  it("reports LCOM-style cohesion and accepts lcom alias", () => {
-    const root = createProject({ "src/a.ts": "class Service { run() { return 1; } }\n" });
+  it("reports conservative LCOM-style cohesion and accepts lcom alias", () => {
+    const root = createProject({
+      "src/a.ts": `
+class Service {
+  left = 1;
+  right = 2;
+  a() { return this.left; }
+  b() { return this.right; }
+}
+`,
+    });
     const result = runAnalysis({ project: discoverProject({ root }), config: defaultConfig, selectedAnalyzers: ["lcom"], generatedAt: "now", startedAtMs: 0, endedAtMs: 1 });
 
     expect(result.analyses.cohesion?.classes).toEqual([expect.objectContaining({ name: "Service", lcom: 1 })]);
     expect(result.issues[0]).toMatchObject({ analyzer: "cohesion", rule: "cohesion.lcom" });
+  }, 15_000);
+
+  it("suppresses one-method error classes and React component classes", () => {
+    const root = createProject({
+      "src/a.tsx": `
+import React from "react";
+class ActionValidationError extends Error { constructor(message: string) { super(message); } }
+class RenderErrorBoundary extends React.Component<{children: React.ReactNode}, {failed: boolean}> {
+  state = { failed: false };
+  render() { return this.props.children; }
+}
+`,
+    });
+    const result = runAnalysis({ project: discoverProject({ root }), config: defaultConfig, selectedAnalyzers: ["cohesion"], generatedAt: "now", startedAtMs: 0, endedAtMs: 1 });
+
+    expect(result.issues.filter((item) => item.analyzer === "cohesion")).toHaveLength(0);
+    expect(result.analyses.cohesion?.classes).toEqual([
+      expect.objectContaining({ name: "ActionValidationError", ignoredReason: "error-class" }),
+      expect.objectContaining({ name: "RenderErrorBoundary", ignoredReason: "component-class" }),
+    ]);
   }, 15_000);
 });
 

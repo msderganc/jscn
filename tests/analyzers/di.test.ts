@@ -20,6 +20,36 @@ describe("DI analyzer", () => {
     expect(result.analyses.di?.issues).toHaveLength(1);
     expect(result.issues[0]).toMatchObject({ analyzer: "di", file: "src/service.ts" });
   }, 15_000);
+
+  it("does not report ordinary get calls on maps, URLSearchParams, or stores", () => {
+    const root = createProject({
+      "src/service.ts": `
+const map = new Map<string, string>();
+map.get("value");
+new URLSearchParams("?next=/").get("next");
+const store = { getData: (key: string) => key };
+store.getData("value");
+`,
+    });
+    const result = runAnalysis({ project: discoverProject({ root }), config: defaultConfig, selectedAnalyzers: ["di"], generatedAt: "now", startedAtMs: 0, endedAtMs: 1 });
+
+    expect(result.analyses.di?.issues).toHaveLength(0);
+  }, 15_000);
+
+  it("supports configured container receiver and lookup method names", () => {
+    const root = createProject({ "src/service.ts": "ioc.resolve('db');\n" });
+    const result = runAnalysis({
+      project: discoverProject({ root }),
+      config: { ...defaultConfig, di: { ...defaultConfig.di, containerNames: ["ioc"], lookupMethods: ["resolve"] } },
+      selectedAnalyzers: ["di"],
+      generatedAt: "now",
+      startedAtMs: 0,
+      endedAtMs: 1,
+    });
+
+    expect(result.analyses.di?.issues).toHaveLength(1);
+    expect(result.issues[0]?.details).toMatchObject({ receiver: "ioc", method: "resolve" });
+  }, 15_000);
 });
 
 function createProject(files: Record<string, string>): string {

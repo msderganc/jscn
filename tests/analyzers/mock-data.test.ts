@@ -14,6 +14,9 @@ describe("mock-data analyzer", () => {
     const root = createProject({
       "src/user.ts": "export const email = 'test@example.com';\n",
       "src/user.test.ts": "export const email = 'test@example.com';\n",
+      "src/server/data/__tests__/fixtures.ts": "export const email = 'test@example.com';\n",
+      "src/server/data/__fixtures__/users.ts": "export const email = 'test@example.com';\n",
+      "tests/user.ts": "export const email = 'test@example.com';\n",
     });
     const result = runAnalysis({ project: discoverProject({ root }), config: defaultConfig, selectedAnalyzers: ["mockdata"], generatedAt: "now", startedAtMs: 0, endedAtMs: 1 });
 

@@ -31,6 +31,23 @@ export const defaultConfig: ResolvedConfig = {
     includeExternal: false,
     maxCycles: 0,
   },
+  deadCode: {
+    reportIntentionalUnused: false,
+  },
+  di: {
+    containerNames: ["container", "serviceLocator", "locator", "injector", "registry", "di"],
+    lookupMethods: ["get", "resolve", "lookup"],
+    compositionRoots: [
+      "**/main.{js,jsx,ts,tsx,mjs,cjs,mts,cts}",
+      "**/bootstrap.{js,jsx,ts,tsx,mjs,cjs,mts,cts}",
+      "**/composition-root.{js,jsx,ts,tsx,mjs,cjs,mts,cts}",
+    ],
+  },
+  clones: {
+    includeTestBoilerplate: false,
+    minNormalizedChars: 40,
+    minNonImportChars: 20,
+  },
 };
 
 export const defaultConfigFileName = ".jscn.toml";

@@ -9,7 +9,13 @@ describe("default config", () => {
     expect(defaultConfigToml).toContain("[analysis]");
     expect(defaultConfigToml).toContain("[complexity]");
     expect(defaultConfigToml).toContain("[dependencies]");
+    expect(defaultConfigToml).toContain("[dead_code]");
+    expect(defaultConfigToml).toContain("[di]");
+    expect(defaultConfigToml).toContain("[clones]");
     expect(defaultConfig.analysis.includePatterns).toEqual(["**/*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}"]);
     expect(defaultConfig.analysis.followSymlinks).toBe(false);
+    expect(defaultConfig.deadCode.reportIntentionalUnused).toBe(false);
+    expect(defaultConfig.di.containerNames).toContain("container");
+    expect(defaultConfig.clones.includeTestBoilerplate).toBe(false);
   });
 });

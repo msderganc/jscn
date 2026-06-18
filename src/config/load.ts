@@ -75,6 +75,18 @@ function mergeConfig(...configs: Array<ConfigFile | ResolvedConfig>): ResolvedCo
     if (config.dependencies) {
       merged.dependencies = { ...merged.dependencies, ...config.dependencies };
     }
+
+    if (config.deadCode) {
+      merged.deadCode = { ...merged.deadCode, ...config.deadCode };
+    }
+
+    if (config.di) {
+      merged.di = { ...merged.di, ...config.di };
+    }
+
+    if (config.clones) {
+      merged.clones = { ...merged.clones, ...config.clones };
+    }
   }
 
   return merged;
@@ -94,6 +106,9 @@ function normalizeConfigFile(value: unknown): ConfigFile {
     analysis: normalizeAnalysis(value.analysis),
     complexity: normalizeComplexity(value.complexity),
     dependencies: normalizeDependencies(value.dependencies),
+    deadCode: normalizeDeadCode(value.dead_code),
+    di: normalizeDi(value.di),
+    clones: normalizeClones(value.clones),
   };
 }
 
@@ -150,6 +165,43 @@ function normalizeDependencies(value: unknown): ConfigFile["dependencies"] {
     includeTypeOnly: booleanValue(value.include_type_only, "dependencies.include_type_only"),
     includeExternal: booleanValue(value.include_external, "dependencies.include_external"),
     maxCycles: integerValue(value.max_cycles, "dependencies.max_cycles"),
+  });
+}
+
+function normalizeDeadCode(value: unknown): ConfigFile["deadCode"] {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  assertRecord(value, "dead_code");
+  return compact({
+    reportIntentionalUnused: booleanValue(value.report_intentional_unused, "dead_code.report_intentional_unused"),
+  });
+}
+
+function normalizeDi(value: unknown): ConfigFile["di"] {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  assertRecord(value, "di");
+  return compact({
+    containerNames: stringArrayValue(value.container_names, "di.container_names"),
+    lookupMethods: stringArrayValue(value.lookup_methods, "di.lookup_methods"),
+    compositionRoots: stringArrayValue(value.composition_roots, "di.composition_roots"),
+  });
+}
+
+function normalizeClones(value: unknown): ConfigFile["clones"] {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  assertRecord(value, "clones");
+  return compact({
+    includeTestBoilerplate: booleanValue(value.include_test_boilerplate, "clones.include_test_boilerplate"),
+    minNormalizedChars: integerValue(value.min_normalized_chars, "clones.min_normalized_chars"),
+    minNonImportChars: integerValue(value.min_non_import_chars, "clones.min_non_import_chars"),
   });
 }
 

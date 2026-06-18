@@ -45,9 +45,53 @@ describe("loadConfig", () => {
     expect(loaded.config.complexity.maxComplexity).toBe(21);
   });
 
+  it("maps analyzer TOML options to camelCase config fields", () => {
+    const root = mkdtempSync(join(tmpdir(), "jscn-config-"));
+    writeFileSync(
+      join(root, ".jscn.toml"),
+      [
+        "[dead_code]",
+        "report_intentional_unused = true",
+        "",
+        "[di]",
+        "container_names = [\"ioc\"]",
+        "lookup_methods = [\"resolve\"]",
+        "composition_roots = [\"src/root.ts\"]",
+        "",
+        "[clones]",
+        "include_test_boilerplate = true",
+        "min_normalized_chars = 60",
+        "min_non_import_chars = 25",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const loaded = loadConfig({ cwd: root });
+
+    expect(loaded.config.deadCode.reportIntentionalUnused).toBe(true);
+    expect(loaded.config.di).toMatchObject({
+      containerNames: ["ioc"],
+      lookupMethods: ["resolve"],
+      compositionRoots: ["src/root.ts"],
+    });
+    expect(loaded.config.clones).toMatchObject({
+      includeTestBoilerplate: true,
+      minNormalizedChars: 60,
+      minNonImportChars: 25,
+    });
+  });
+
   it("rejects invalid thresholds through shared validation", () => {
     const root = mkdtempSync(join(tmpdir(), "jscn-config-"));
     writeFileSync(join(root, ".jscn.toml"), "[complexity]\nlow_threshold = 20\nmedium_threshold = 10\n", "utf8");
+
+    expect(() => loadConfig({ cwd: root })).toThrow(ConfigValidationError);
+  });
+
+  it("rejects empty DI matcher arrays", () => {
+    const root = mkdtempSync(join(tmpdir(), "jscn-config-"));
+    writeFileSync(join(root, ".jscn.toml"), "[di]\ncontainer_names = []\nlookup_methods = []\ncomposition_roots = []\n", "utf8");
 
     expect(() => loadConfig({ cwd: root })).toThrow(ConfigValidationError);
   });

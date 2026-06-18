@@ -16,7 +16,7 @@ interface Worker {}
 class Base {}
 export class Service extends Base implements Worker {
   value = 1;
-  run() {}
+  run() { return this.value; }
 }
 const Assigned = class {
   field = true;
@@ -29,7 +29,7 @@ const Assigned = class {
 
     expect(model.classes).toMatchObject([
       { name: "Base" },
-      { name: "Service", methods: ["run"], fields: ["value"], extends: "Base", implements: ["Worker"] },
+      { name: "Service", methods: ["run"], fields: ["value"], extends: "Base", implements: ["Worker"], methodFieldUses: [{ method: "run", fields: ["value"] }] },
       { name: "Assigned", methods: ["call"], fields: ["field"] },
     ]);
   }, 15_000);

@@ -1,14 +1,16 @@
 import type { Issue, DeadCodeReport } from "../core/schema.js";
+import type { DeadCodeConfig } from "../config/schema.js";
 import { buildControlFlowModel } from "../project/control-flow.js";
 import { buildSymbolModel } from "../project/symbols.js";
 import type { ProjectModel } from "../project/model.js";
 
-export function analyzeDeadCode(project: ProjectModel): DeadCodeReport {
+export function analyzeDeadCode(project: ProjectModel, config: DeadCodeConfig): DeadCodeReport {
   const controlFlow = buildControlFlowModel(project);
   const symbols = buildSymbolModel(project);
   const referenced = new Set(symbols.references.map((item) => `${item.file}:${item.name}`));
   const unused = symbols.declarations
     .filter((item) => !item.exported && !item.imported && !referenced.has(`${item.file}:${item.name}`))
+    .filter((item) => config.reportIntentionalUnused || !item.name.startsWith("_"))
     .map<Issue>((item) => ({
       id: `deadcode:unused:${item.file}:${item.name}`,
       analyzer: "deadcode",
@@ -18,6 +20,7 @@ export function analyzeDeadCode(project: ProjectModel): DeadCodeReport {
       start: item.loc,
       symbol: item.name,
       rule: "deadcode.unused",
+      details: { reason: "unreferenced-local" },
     }));
 
   return {
@@ -29,6 +32,7 @@ export function analyzeDeadCode(project: ProjectModel): DeadCodeReport {
       file: item.file,
       start: item.loc,
       rule: "deadcode.unreachable",
+      details: { reason: "unreachable-statement" },
     })),
     unused,
   };
