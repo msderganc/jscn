@@ -14,7 +14,7 @@ const execFileAsync = promisify(execFile);
 
 describe("package foundation", () => {
   it("exports a concrete version string", () => {
-    expect(version).toBe("0.1.0");
+    expect(version).toBe("0.1.2");
   });
 
   it("prints the version for --version", () => {
@@ -31,7 +31,7 @@ describe("package foundation", () => {
       process.stdout.write = originalWrite;
     }
 
-    expect(writes.join("")).toBe("0.1.0\n");
+    expect(writes.join("")).toBe("0.1.2\n");
   });
 
   it("prints the version for the version command", () => {
@@ -48,7 +48,7 @@ describe("package foundation", () => {
       process.stdout.write = originalWrite;
     }
 
-    expect(writes.join("")).toBe("0.1.0\n");
+    expect(writes.join("")).toBe("0.1.2\n");
   });
 
   it("runs through a symlinked bin entry", async () => {
@@ -61,7 +61,7 @@ describe("package foundation", () => {
     const versionFlag = await execFileAsync(binPath, ["--version"]);
     const versionCommand = await execFileAsync(binPath, ["version"]);
 
-    expect(versionFlag.stdout).toBe("0.1.0\n");
-    expect(versionCommand.stdout).toBe("0.1.0\n");
+    expect(versionFlag.stdout).toBe("0.1.2\n");
+    expect(versionCommand.stdout).toBe("0.1.2\n");
   }, 30_000);
 });

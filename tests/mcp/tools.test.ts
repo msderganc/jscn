@@ -16,7 +16,7 @@ describe("MCP tools", () => {
     expect(
       healthScore(
         createAnalysisResult({
-          version: "0.1.0",
+          version: "0.1.2",
           generatedAt: "now",
           durationMs: 1,
           root: "/repo",

@@ -4,11 +4,11 @@ import { main } from "../../src/cli/main.js";
 
 describe("version command", () => {
   it("prints version with --version", () => {
-    expect(captureStdout(() => main(["node", "jscn", "--version"]))).toBe("0.1.0\n");
+    expect(captureStdout(() => main(["node", "jscn", "--version"]))).toBe("0.1.2\n");
   });
 
   it("prints version with version command", () => {
-    expect(captureStdout(() => main(["node", "jscn", "version"]))).toBe("0.1.0\n");
+    expect(captureStdout(() => main(["node", "jscn", "version"]))).toBe("0.1.2\n");
   });
 });
 

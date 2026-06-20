@@ -3,7 +3,7 @@ import type { AnalysisResult } from "../../src/core/schema.js";
 
 export function sampleResult(): AnalysisResult {
   return createAnalysisResult({
-    version: "0.1.0",
+    version: "0.1.2",
     generatedAt: "2026-01-01T00:00:00.000Z",
     durationMs: 12,
     root: "/repo",

@@ -42,7 +42,7 @@ describe("canonical schema helpers", () => {
 
   it("creates an analysis result with aggregate summary", () => {
     const result = createAnalysisResult({
-      version: "0.1.0",
+      version: "0.1.2",
       generatedAt: "2026-06-18T00:00:00.000Z",
       durationMs: 12,
       root: "/repo",
@@ -55,7 +55,7 @@ describe("canonical schema helpers", () => {
     });
 
     expect(result).toMatchObject({
-      version: "0.1.0",
+      version: "0.1.2",
       durationMs: 12,
       root: "/repo",
       summary: {
